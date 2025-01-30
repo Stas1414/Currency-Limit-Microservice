@@ -6,7 +6,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -20,19 +22,12 @@ public class ExchangeRate {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String currency_pair;
+    private String symbol;
 
     private LocalDate date;
 
-    private BigDecimal closing_rate;
+    private BigDecimal closingRate;
 
-    private BigDecimal previous_closing_rate;
+    private BigDecimal previousClosingRate;
+
 }
-
-/*
-id: Long или UUID — уникальный идентификатор курса валют.
-currency_pair: String — валютная пара (например, "KZT/USD", "RUB/USD").
-date: LocalDate — дата курса валют.
-closing_rate: BigDecimal — курс закрытия на данный день.
-previous_close: BigDecimal — курс закрытия за предыдущий день (если текущий курс недоступен).
- */

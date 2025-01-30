@@ -20,18 +20,11 @@ public class Limit {
 
     private String category;
 
-    private BigDecimal limit_amount;
+    private BigDecimal limitAmount = BigDecimal.valueOf(1000);
 
     private String currency = "USD";
 
-    private LocalDateTime set_date;
+    private LocalDateTime setDate;
 
 }
 
-/*
-id: Long или UUID — уникальный идентификатор лимита.
-category: String — категория расхода (например, "товары" или "услуги").
-limit_amount: BigDecimal — сумма лимита в долларах США.
-currency: String — валюта лимита (в данном случае всегда "USD").
-set_date: LocalDateTime — дата установки лимита.
- */

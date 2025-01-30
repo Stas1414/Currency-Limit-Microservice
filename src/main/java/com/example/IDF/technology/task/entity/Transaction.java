@@ -1,9 +1,6 @@
 package com.example.IDF.technology.task.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,16 +18,22 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private Long accountFrom;
+
+    private Long accountTo;
+
     private LocalDateTime date;
 
     private BigDecimal amount;
 
     private String currency;
 
-    private String category;
 
-    private boolean limit_exceeded;
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
 
+    private boolean limitExceeded;
 
 }
 

@@ -6,9 +6,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Map;
+import java.util.Objects;
+
 @Component
 @FeignClient(name = "exchangeRateClient", url = "https://api.twelvedata.com")
 public interface ExchangeRateClient {
     @GetMapping("/quote")
-    ExchangeRate getExchangeRate(@RequestParam("symbol") String symbol, @RequestParam("interval") String interval, @RequestParam("apikey") String apiKey);
+    Map<String, Object> getExchangeRate(@RequestParam("symbol") String symbol, @RequestParam("apikey") String apiKey);
 }

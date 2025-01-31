@@ -28,10 +28,7 @@ public class Transaction {
 
     private String currency;
 
-
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
+    private String category;
 
     private boolean limitExceeded;
 

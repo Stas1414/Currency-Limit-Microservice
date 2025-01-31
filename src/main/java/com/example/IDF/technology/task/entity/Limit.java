@@ -18,6 +18,8 @@ public class Limit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private Long accountToId;
+
     private String category;
 
     private BigDecimal limitAmount = BigDecimal.valueOf(1000);

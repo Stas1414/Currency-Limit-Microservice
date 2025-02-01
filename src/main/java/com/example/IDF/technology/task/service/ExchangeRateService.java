@@ -13,7 +13,7 @@ import java.util.List;
 @Service
 public class ExchangeRateService {
 
-    @Value("${api.twelve data.key}")
+    @Value("${api.twelve.data.key}")
     private String apiKey;
 
     private final ExchangeRateRepository exchangeRateRepository;

@@ -18,7 +18,7 @@ import java.util.Map;
 @Data
 public class ForexService {
 
-    @Value("${api.twelvedata.key}")
+    @Value("${api.twelve.data.key}")
     private String apiKey;
 
     private final ExchangeRateClient exchangeRateClient;
@@ -44,8 +44,8 @@ public class ForexService {
     public static ExchangeRate getExchangeRate(Map<String, Object> exchangeRate) {
         ExchangeRate result = new ExchangeRate();
         result.setSymbol(exchangeRate.get("symbol").toString());
-        result.setClosingRate(BigDecimal.valueOf(Long.parseLong(exchangeRate.get("close").toString())));
-        result.setPreviousClosingRate(BigDecimal.valueOf(Long.parseLong(exchangeRate.get("previous_close").toString())));
+        result.setClosingRate(BigDecimal.valueOf(Double.parseDouble(exchangeRate.get("close").toString())));
+        result.setPreviousClosingRate(BigDecimal.valueOf(Double.parseDouble(exchangeRate.get("previous_close").toString())));
         result.setDate(LocalDate.now());
         return result;
     }

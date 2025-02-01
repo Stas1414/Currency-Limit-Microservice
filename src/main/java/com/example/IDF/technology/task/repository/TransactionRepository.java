@@ -16,7 +16,8 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 //    @NativeQuery("")
 //    List<Transaction> findTransactionByLimitExceeded();
 
-    @Query(value = "SELECT * FROM transaction WHERE EXTRACT(MONTH FROM date) = :month ORDER BY date DESC",
+    @Query(value = "SELECT * FROM transaction WHERE EXTRACT(MONTH FROM date) = :month AND category = :category ORDER BY date DESC",
             nativeQuery = true)
-    List<Transaction> findTransactionsByMonth(@Param("month") int month);
+    List<Transaction> findTransactionsByMonthAndCategory(@Param("month") int month, @Param("category") String category);
+
 }

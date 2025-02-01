@@ -1,29 +1,29 @@
 package com.example.IDF.technology.task.service;
 
 import com.example.IDF.technology.task.entity.ExchangeRate;
-import com.example.IDF.technology.task.entity.Limit;
+import com.example.IDF.technology.task.entity.AccountLimit;
 import com.example.IDF.technology.task.entity.Transaction;
 import com.example.IDF.technology.task.feign.ExchangeRateClient;
 import com.example.IDF.technology.task.repository.ExchangeRateRepository;
 import com.example.IDF.technology.task.repository.LimitRepository;
 import com.example.IDF.technology.task.repository.TransactionRepository;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class TransactionService {
 
-    @Value("${api.twelvedata.key}")
+    @Value("${api.twelve.data.key}")
     private String apiKey;
 
     private final TransactionRepository transactionRepository;
@@ -34,12 +34,20 @@ public class TransactionService {
 
     private final LimitRepository limitRepository;
 
+    @Autowired
+    public TransactionService(TransactionRepository transactionRepository, ExchangeRateRepository exchangeRateRepository, ExchangeRateClient exchangeRateClient, LimitRepository limitRepository) {
+        this.transactionRepository = transactionRepository;
+        this.exchangeRateRepository = exchangeRateRepository;
+        this.exchangeRateClient = exchangeRateClient;
+        this.limitRepository = limitRepository;
+    }
+
     public Transaction getTransaction(Transaction transaction) {
         ExchangeRate exchangeRate = checkExchangeRate(transaction);
 
-        Limit limit = limitRepository.findLimitsByMonthAndCategory(LocalDateTime.now().getMonthValue(), transaction.getCategory());
-        List<Transaction> transactions = transactionRepository.findTransactionsByMonth(LocalDateTime.now().getMonthValue());
-
+        AccountLimit limit = limitRepository.findLimitsByMonthAndCategory(LocalDateTime.now().getMonthValue(), transaction.getCategory());
+        List<Transaction> transactions = transactionRepository.findTransactionsByMonthAndCategory(LocalDateTime.now().getMonthValue(), transaction.getCategory());
+        transactions.add(transaction);
         if (exchangeRate == null) {
             Map<String, Object> rate = exchangeRateClient.getExchangeRate(transaction.getCurrency(), apiKey);
             ExchangeRate newExchangeRate = ForexService.getExchangeRate(rate);
@@ -60,6 +68,7 @@ public class TransactionService {
                 transaction.setLimitExceeded(true);
             }
         }
+        transactionRepository.save(transaction);
         return transaction;
     }
 
@@ -74,7 +83,7 @@ public class TransactionService {
 
     }
 
-    public BigDecimal convertToUSD(BigDecimal amount, ExchangeRate exchangeRate, Transaction transaction) {
+    private BigDecimal convertToUSD(BigDecimal amount, ExchangeRate exchangeRate, Transaction transaction) {
         DayOfWeek dayOfWeek = transaction.getDate().getDayOfWeek();
         BigDecimal rate = getRateForDayOfWeek(exchangeRate, dayOfWeek);
 

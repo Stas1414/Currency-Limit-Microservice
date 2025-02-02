@@ -25,15 +25,15 @@ public class TransactionMapperImpl implements TransactionMapper {
 
     @Override
     public TransactionDto transactionToTransactionDto(Transaction transaction) {
-         if (transaction == null) {
-             return null;
-         }
+        if (transaction == null) {
+            return null;
+        }
 
-         return new TransactionDto(transaction.getAccountFrom(),
-                 transaction.getAccountTo(),
-                 transaction.getDate(),
-                 transaction.getAmount(),
-                 transaction.getCurrency(),
-                 transaction.getCategory());
+        return new TransactionDto(transaction.getAccountFrom(),
+                transaction.getAccountTo(),
+                transaction.getDate(),
+                transaction.getAmount(),
+                transaction.getCurrency(),
+                transaction.getCategory());
     }
 }

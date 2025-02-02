@@ -10,8 +10,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableFeignClients(basePackages = "com.example.IDF.technology.task.feign")
 public class IdfTechnologyTaskApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(IdfTechnologyTaskApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(IdfTechnologyTaskApplication.class, args);
+    }
 
 }

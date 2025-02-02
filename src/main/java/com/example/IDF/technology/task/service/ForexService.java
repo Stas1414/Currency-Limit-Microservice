@@ -34,7 +34,7 @@ public class ForexService {
     }
 
     @PostConstruct
-    @Scheduled( cron = "0 30 11 * * ?" )
+    @Scheduled(cron = "0 30 11 * * ?")
     public void updateTask() {
         logger.info("Updating exchange rates...");
         Map<String, Object> exchangeRateUSDKZT = exchangeRateClient.getExchangeRate("USD/KZT", apiKey);

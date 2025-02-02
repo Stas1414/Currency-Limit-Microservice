@@ -78,7 +78,7 @@ public class AccountLimit {
     public AccountLimit() {
     }
 
-    public AccountLimit( String category, BigDecimal limitAmount, LocalDateTime setDate) {
+    public AccountLimit(String category, BigDecimal limitAmount, LocalDateTime setDate) {
         this.category = category;
         this.limitAmount = limitAmount;
         this.setDate = setDate;

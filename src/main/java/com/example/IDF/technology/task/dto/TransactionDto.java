@@ -1,46 +1,21 @@
-package com.example.IDF.technology.task.entity;
-
-import jakarta.persistence.*;
-
+package com.example.IDF.technology.task.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Entity
-public class Transaction {
+public class TransactionDto {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(nullable = false)
     private Long accountFrom;
 
-    @Column(nullable = false)
     private Long accountTo;
 
-    @Column(nullable = false)
     private LocalDateTime date;
 
-    @Column(nullable = false)
     private BigDecimal amount;
 
-    @Column(nullable = false)
     private String currency;
 
-    @Column(nullable = false)
     private String category;
-
-    @Column(nullable = false)
-    private boolean limitExceeded;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public Long getAccountFrom() {
         return accountFrom;
@@ -90,18 +65,7 @@ public class Transaction {
         this.category = category;
     }
 
-    public boolean isLimitExceeded() {
-        return limitExceeded;
-    }
-
-    public void setLimitExceeded(boolean limitExceeded) {
-        this.limitExceeded = limitExceeded;
-    }
-
-    public Transaction() {
-    }
-
-    public Transaction(Long accountFrom, Long accountTo, LocalDateTime date, BigDecimal amount, String currency, String category) {
+    public TransactionDto(Long accountFrom, Long accountTo, LocalDateTime date, BigDecimal amount, String currency, String category) {
         this.accountFrom = accountFrom;
         this.accountTo = accountTo;
         this.date = date;
@@ -109,6 +73,7 @@ public class Transaction {
         this.currency = currency;
         this.category = category;
     }
+
+    public TransactionDto() {
+    }
 }
-
-

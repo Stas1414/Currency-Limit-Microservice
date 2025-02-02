@@ -4,7 +4,6 @@ import com.example.IDF.technology.task.entity.ExchangeRate;
 import com.example.IDF.technology.task.feign.ExchangeRateClient;
 import com.example.IDF.technology.task.repository.ExchangeRateRepository;
 import jakarta.annotation.PostConstruct;
-import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -15,7 +14,6 @@ import java.time.LocalDate;
 import java.util.Map;
 
 @Service
-@Data
 public class ForexService {
 
     @Value("${api.twelve.data.key}")
@@ -31,15 +29,15 @@ public class ForexService {
         this.exchangeRateRepository = exchangeRateRepository;
     }
 
-    @PostConstruct
-    @Scheduled( cron = "0 30 11 * * ?" )
-    public void updateTask() {
-        Map<String, Object> exchangeRateUSDKZT = exchangeRateClient.getExchangeRate("USD/KZT", apiKey);
-        Map<String, Object> exchangeRateUSDRUB = exchangeRateClient.getExchangeRate("USD/RUB", apiKey);
-
-        exchangeRateRepository.save(getExchangeRate(exchangeRateUSDKZT));
-        exchangeRateRepository.save(getExchangeRate(exchangeRateUSDRUB));
-    }
+//    @PostConstruct
+//    @Scheduled( cron = "0 30 11 * * ?" )
+//    public void updateTask() {
+//        Map<String, Object> exchangeRateUSDKZT = exchangeRateClient.getExchangeRate("USD/KZT", apiKey);
+//        Map<String, Object> exchangeRateUSDRUB = exchangeRateClient.getExchangeRate("USD/RUB", apiKey);
+//
+//        exchangeRateRepository.save(getExchangeRate(exchangeRateUSDKZT));
+//        exchangeRateRepository.save(getExchangeRate(exchangeRateUSDRUB));
+//    }
 
     public static ExchangeRate getExchangeRate(Map<String, Object> exchangeRate) {
         ExchangeRate result = new ExchangeRate();

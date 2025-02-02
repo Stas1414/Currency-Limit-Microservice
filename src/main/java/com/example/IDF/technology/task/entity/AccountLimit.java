@@ -1,31 +1,30 @@
 package com.example.IDF.technology.task.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Data
-@NoArgsConstructor
 public class AccountLimit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private Long accountToId;
 
+    @Column(nullable = false)
     private String category;
 
+    @Column(nullable = false)
     private BigDecimal limitAmount = BigDecimal.valueOf(1000);
 
+    @Column(nullable = false)
     private String currency = "USD";
 
+    @Column(nullable = false)
     private LocalDateTime setDate;
 
     public Long getId() {
@@ -73,6 +72,22 @@ public class AccountLimit {
     }
 
     public void setSetDate(LocalDateTime setDate) {
+        this.setDate = setDate;
+    }
+
+    public AccountLimit() {
+    }
+
+    public AccountLimit(Long accountToId, String category, BigDecimal limitAmount, LocalDateTime setDate) {
+        this.accountToId = accountToId;
+        this.category = category;
+        this.limitAmount = limitAmount;
+        this.setDate = setDate;
+    }
+
+    public AccountLimit(Long accountToId, String category, LocalDateTime setDate) {
+        this.accountToId = accountToId;
+        this.category = category;
         this.setDate = setDate;
     }
 }

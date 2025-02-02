@@ -1,31 +1,29 @@
 package com.example.IDF.technology.task.entity;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
-@Data
-@NoArgsConstructor
 public class ExchangeRate {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String symbol;
 
+    @Column(nullable = false)
     private LocalDate date;
 
+    @Column(nullable = false)
     private BigDecimal closingRate;
 
+    @Column(nullable = false)
     private BigDecimal previousClosingRate;
 
     public Long getId() {

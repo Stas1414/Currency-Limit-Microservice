@@ -7,6 +7,7 @@ import com.example.IDF.technology.task.feign.ExchangeRateClient;
 import com.example.IDF.technology.task.repository.ExchangeRateRepository;
 import com.example.IDF.technology.task.repository.LimitRepository;
 import com.example.IDF.technology.task.repository.TransactionRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -14,7 +15,6 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.DayOfWeek;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +42,7 @@ public class TransactionService {
         this.limitRepository = limitRepository;
     }
 
+    @Transactional
     public Transaction getTransaction(Transaction transaction) {
         ExchangeRate exchangeRate = checkExchangeRate(transaction);
 
@@ -49,7 +50,7 @@ public class TransactionService {
         List<Transaction> transactions = transactionRepository.findTransactionsByMonthAndCategory(LocalDateTime.now().getMonthValue(), transaction.getCategory());
         transactions.add(transaction);
         if (exchangeRate == null) {
-            Map<String, Object> rate = exchangeRateClient.getExchangeRate(transaction.getCurrency(), apiKey);
+            Map<String, Object> rate = exchangeRateClient.getExchangeRate("USD/" + transaction.getCurrency(), apiKey);
             ExchangeRate newExchangeRate = ForexService.getExchangeRate(rate);
 
             exchangeRateRepository.save(newExchangeRate);
@@ -88,12 +89,12 @@ public class TransactionService {
         BigDecimal rate = getRateForDayOfWeek(exchangeRate, dayOfWeek);
 
         String currencyPair = exchangeRate.getSymbol();
-        if (currencyPair.startsWith("USD")) {
+        if (currencyPair.endsWith("/USD")) {
             return amount.multiply(rate);
-        } else if (currencyPair.endsWith("USD")) {
+        } else if (currencyPair.startsWith("USD/")) {
             return amount.divide(rate, 2, RoundingMode.HALF_UP);
         } else {
-            throw new IllegalArgumentException("Неподдерживаемый формат валютной пары: " + currencyPair);
+            throw new IllegalArgumentException("Неподдерживаемая валютная пара: " + currencyPair);
         }
     }
 

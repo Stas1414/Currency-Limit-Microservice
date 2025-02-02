@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/transactions")
-public class TransactionController {
+public class BankController {
 
     private final TransactionService transactionService;
 
     @Autowired
-    public TransactionController(TransactionService transactionService) {
+    public BankController(TransactionService transactionService) {
         this.transactionService = transactionService;
     }
 

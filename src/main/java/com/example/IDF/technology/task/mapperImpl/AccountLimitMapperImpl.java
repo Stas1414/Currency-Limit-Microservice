@@ -14,8 +14,7 @@ public class AccountLimitMapperImpl implements AccountLimitMapper {
         if (accountLimit == null) {
             return null;
         }
-        return new AccountLimitDto(accountLimit.getAccountToId(),
-                accountLimit.getLimitAmount(),
+        return new AccountLimitDto(accountLimit.getLimitAmount(),
                 accountLimit.getCategory());
     }
 
@@ -25,12 +24,10 @@ public class AccountLimitMapperImpl implements AccountLimitMapper {
             return null;
         }
         if (accountLimitDto.getLimitAmount() == null) {
-            return new AccountLimit(accountLimitDto.getAccountId(),
-                    accountLimitDto.getCategory(),
+            return new AccountLimit(accountLimitDto.getCategory(),
                     LocalDateTime.now());
         }
-        return new AccountLimit(accountLimitDto.getAccountId(),
-                accountLimitDto.getCategory(),
+        return new AccountLimit(accountLimitDto.getCategory(),
                 accountLimitDto.getLimitAmount(),
                 LocalDateTime.now());
     }

@@ -1,5 +1,7 @@
 package com.example.IDF.technology.task.service;
 
+import java.util.logging.Logger;
+
 import com.example.IDF.technology.task.entity.ExchangeRate;
 import com.example.IDF.technology.task.feign.ExchangeRateClient;
 import com.example.IDF.technology.task.repository.ExchangeRateRepository;
@@ -16,6 +18,8 @@ import java.util.Map;
 @Service
 public class ForexService {
 
+    private static final Logger logger = Logger.getLogger(ForexService.class.getName());
+
     @Value("${api.twelve.data.key}")
     private String apiKey;
 
@@ -29,15 +33,18 @@ public class ForexService {
         this.exchangeRateRepository = exchangeRateRepository;
     }
 
-//    @PostConstruct
-//    @Scheduled( cron = "0 30 11 * * ?" )
-//    public void updateTask() {
-//        Map<String, Object> exchangeRateUSDKZT = exchangeRateClient.getExchangeRate("USD/KZT", apiKey);
-//        Map<String, Object> exchangeRateUSDRUB = exchangeRateClient.getExchangeRate("USD/RUB", apiKey);
-//
-//        exchangeRateRepository.save(getExchangeRate(exchangeRateUSDKZT));
-//        exchangeRateRepository.save(getExchangeRate(exchangeRateUSDRUB));
-//    }
+    @PostConstruct
+    @Scheduled( cron = "0 30 11 * * ?" )
+    public void updateTask() {
+        logger.info("Updating exchange rates...");
+        Map<String, Object> exchangeRateUSDKZT = exchangeRateClient.getExchangeRate("USD/KZT", apiKey);
+        Map<String, Object> exchangeRateUSDRUB = exchangeRateClient.getExchangeRate("USD/RUB", apiKey);
+
+        exchangeRateRepository.save(getExchangeRate(exchangeRateUSDKZT));
+        logger.info("Saved exchange rate for USD/KZT");
+        exchangeRateRepository.save(getExchangeRate(exchangeRateUSDRUB));
+        logger.info("Saved exchange rate for USD/RUB");
+    }
 
     public static ExchangeRate getExchangeRate(Map<String, Object> exchangeRate) {
         ExchangeRate result = new ExchangeRate();

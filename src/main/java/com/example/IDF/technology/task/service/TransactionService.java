@@ -19,19 +19,19 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 @Service
 public class TransactionService {
+
+    private static final Logger logger = Logger.getLogger(TransactionService.class.getName());
 
     @Value("${api.twelve.data.key}")
     private String apiKey;
 
     private final TransactionRepository transactionRepository;
-
     private final ExchangeRateRepository exchangeRateRepository;
-
     private final ExchangeRateClient exchangeRateClient;
-
     private final LimitRepository limitRepository;
 
     @Autowired
@@ -44,16 +44,19 @@ public class TransactionService {
 
     @Transactional
     public Transaction getTransaction(Transaction transaction) {
+        logger.info("Processing transaction: " + transaction);
         ExchangeRate exchangeRate = checkExchangeRate(transaction);
 
         AccountLimit limit = limitRepository.findLimitsByMonthAndCategory(LocalDateTime.now().getMonthValue(), transaction.getCategory());
         List<Transaction> transactions = transactionRepository.findTransactionsByMonthAndCategory(LocalDateTime.now().getMonthValue(), transaction.getCategory());
         transactions.add(transaction);
         if (exchangeRate == null) {
+            logger.info("Exchange rate not found, fetching from API.");
             Map<String, Object> rate = exchangeRateClient.getExchangeRate("USD/" + transaction.getCurrency(), apiKey);
             ExchangeRate newExchangeRate = ForexService.getExchangeRate(rate);
 
             exchangeRateRepository.save(newExchangeRate);
+            logger.info("New exchange rate saved: " + newExchangeRate);
 
             BigDecimal totalSumInUSD = transactions.stream()
                     .map(transaction1 -> convertToUSD(transaction1.getAmount(), newExchangeRate, transaction1))
@@ -70,10 +73,12 @@ public class TransactionService {
             }
         }
         transactionRepository.save(transaction);
+        logger.info("Transaction saved: " + transaction);
         return transaction;
     }
 
     private ExchangeRate checkExchangeRate(Transaction transaction) {
+        logger.info("Checking exchange rate for transaction currency: " + transaction.getCurrency());
         String currency = transaction.getCurrency();
         String regex = String.format("USD/%s|%s/USD", currency, currency);
         List<ExchangeRate> exchangeRates = exchangeRateRepository.findAll();
@@ -81,7 +86,6 @@ public class TransactionService {
                 .filter(rate -> rate.getSymbol().matches(regex))
                 .findFirst();
         return exchangeRateOpt.orElse(null);
-
     }
 
     private BigDecimal convertToUSD(BigDecimal amount, ExchangeRate exchangeRate, Transaction transaction) {
@@ -105,5 +109,4 @@ public class TransactionService {
             return exchangeRate.getClosingRate();
         }
     }
-
 }

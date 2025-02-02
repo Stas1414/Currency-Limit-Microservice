@@ -10,14 +10,12 @@ public class AccountLimitDto {
 
     private BigDecimal limitAmount;
 
-    public AccountLimitDto(Long accountId, BigDecimal limitAmount, String category) {
-        this.accountId = accountId;
+    public AccountLimitDto(BigDecimal limitAmount, String category) {
         this.limitAmount = limitAmount;
         this.category = category;
     }
 
-    public AccountLimitDto(Long accountId, String category) {
-        this.accountId = accountId;
+    public AccountLimitDto(String category) {
         this.category = category;
     }
 

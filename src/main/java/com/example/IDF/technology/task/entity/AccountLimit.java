@@ -12,8 +12,8 @@ public class AccountLimit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Long accountToId;
+//    @Column(nullable = false)
+//    private Long accountToId;
 
     @Column(nullable = false)
     private String category;
@@ -35,13 +35,13 @@ public class AccountLimit {
         this.id = id;
     }
 
-    public Long getAccountToId() {
-        return accountToId;
-    }
-
-    public void setAccountToId(Long accountToId) {
-        this.accountToId = accountToId;
-    }
+//    public Long getAccountToId() {
+//        return accountToId;
+//    }
+//
+//    public void setAccountToId(Long accountToId) {
+//        this.accountToId = accountToId;
+//    }
 
     public String getCategory() {
         return category;
@@ -78,15 +78,13 @@ public class AccountLimit {
     public AccountLimit() {
     }
 
-    public AccountLimit(Long accountToId, String category, BigDecimal limitAmount, LocalDateTime setDate) {
-        this.accountToId = accountToId;
+    public AccountLimit( String category, BigDecimal limitAmount, LocalDateTime setDate) {
         this.category = category;
         this.limitAmount = limitAmount;
         this.setDate = setDate;
     }
 
-    public AccountLimit(Long accountToId, String category, LocalDateTime setDate) {
-        this.accountToId = accountToId;
+    public AccountLimit(String category, LocalDateTime setDate) {
         this.category = category;
         this.setDate = setDate;
     }

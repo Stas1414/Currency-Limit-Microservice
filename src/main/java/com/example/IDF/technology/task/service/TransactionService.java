@@ -1,5 +1,6 @@
 package com.example.IDF.technology.task.service;
 
+import com.example.IDF.technology.task.dto.ExceededTransactionDto;
 import com.example.IDF.technology.task.entity.ExchangeRate;
 import com.example.IDF.technology.task.entity.AccountLimit;
 import com.example.IDF.technology.task.entity.Transaction;
@@ -18,7 +19,6 @@ import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.logging.Logger;
 
 @Service
@@ -40,6 +40,10 @@ public class TransactionService {
         this.exchangeRateRepository = exchangeRateRepository;
         this.exchangeRateClient = exchangeRateClient;
         this.limitRepository = limitRepository;
+    }
+
+    public List<ExceededTransactionDto> getTransactionLimitExceededReported() {
+        return transactionRepository.findTransactionByLimitExceeded();
     }
 
     @Transactional
@@ -80,26 +84,13 @@ public class TransactionService {
     private ExchangeRate checkExchangeRate(Transaction transaction) {
         logger.info("Checking exchange rate for transaction currency: " + transaction.getCurrency());
         String currency = transaction.getCurrency();
-        String regex = String.format("USD/%s|%s/USD", currency, currency);
-        List<ExchangeRate> exchangeRates = exchangeRateRepository.findAll();
-        Optional<ExchangeRate> exchangeRateOpt = exchangeRates.stream()
-                .filter(rate -> rate.getSymbol().matches(regex))
-                .findFirst();
-        return exchangeRateOpt.orElse(null);
+        return exchangeRateRepository.findByCurrency(currency);
     }
 
     private BigDecimal convertToUSD(BigDecimal amount, ExchangeRate exchangeRate, Transaction transaction) {
         DayOfWeek dayOfWeek = transaction.getDate().getDayOfWeek();
         BigDecimal rate = getRateForDayOfWeek(exchangeRate, dayOfWeek);
-
-        String currencyPair = exchangeRate.getSymbol();
-        if (currencyPair.endsWith("/USD")) {
-            return amount.multiply(rate);
-        } else if (currencyPair.startsWith("USD/")) {
-            return amount.divide(rate, 2, RoundingMode.HALF_UP);
-        } else {
-            throw new IllegalArgumentException("Неподдерживаемая валютная пара: " + currencyPair);
-        }
+        return amount.divide(rate, 2, RoundingMode.HALF_UP);
     }
 
     private BigDecimal getRateForDayOfWeek(ExchangeRate exchangeRate, DayOfWeek dayOfWeek) {

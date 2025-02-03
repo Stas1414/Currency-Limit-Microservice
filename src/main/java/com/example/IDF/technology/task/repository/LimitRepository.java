@@ -15,14 +15,4 @@ public interface LimitRepository extends JpaRepository<AccountLimit, Long> {
             nativeQuery = true)
     AccountLimit findLimitsByMonthAndCategory(@Param("month") int month, @Param("category") String category);
 
-    /*
-    @Query(value = "SELECT * FROM limit WHERE MONTH(set_date) = :month " +
-               "AND category = :category " +
-               "AND account_to_id = :accountToId " +
-               "ORDER BY set_date DESC LIMIT 1",
-       nativeQuery = true)
-Limit findLimitsByMonthCategoryAndAccount(@Param("month") int month,
-                                          @Param("category") String category,
-                                          @Param("accountToId") Long accountToId);
-     */
 }

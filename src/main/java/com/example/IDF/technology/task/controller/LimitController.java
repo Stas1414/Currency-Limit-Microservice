@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/limits")
+@RequestMapping("/api/limits")
 public class LimitController {
 
     private static final Logger logger = Logger.getLogger(LimitController.class.getName());  // Используем стандартный Logger

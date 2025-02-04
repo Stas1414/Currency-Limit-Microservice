@@ -21,6 +21,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+/**
+ * Service class for handling transactions and managing account limits.
+ * <p>
+ * This service provides methods for processing transactions, checking exchange rates, and ensuring
+ * that transactions do not exceed account limits. It interacts with repositories for fetching
+ * and saving data related to transactions, exchange rates, and account limits.
+ * </p>
+ */
 @Service
 public class TransactionService {
 
@@ -34,6 +42,14 @@ public class TransactionService {
     private final ExchangeRateClient exchangeRateClient;
     private final LimitRepository limitRepository;
 
+    /**
+     * Constructor to initialize the service with the required repositories and external services.
+     *
+     * @param transactionRepository Repository for handling transaction data.
+     * @param exchangeRateRepository Repository for handling exchange rate data.
+     * @param exchangeRateClient Client for fetching exchange rate data from an external API.
+     * @param limitRepository Repository for handling account limit data.
+     */
     @Autowired
     public TransactionService(TransactionRepository transactionRepository, ExchangeRateRepository exchangeRateRepository, ExchangeRateClient exchangeRateClient, LimitRepository limitRepository) {
         this.transactionRepository = transactionRepository;
@@ -42,10 +58,27 @@ public class TransactionService {
         this.limitRepository = limitRepository;
     }
 
+    /**
+     * Retrieves all transactions where the limit has been exceeded.
+     *
+     * @return A list of {@link ExceededTransactionDto} containing transactions that exceed their limits.
+     */
     public List<ExceededTransactionDto> getTransactionLimitExceededReported() {
         return transactionRepository.findTransactionByLimitExceeded();
     }
 
+    /**
+     * Processes a transaction by checking exchange rates, ensuring it doesn't exceed the account limit,
+     * and saving the transaction.
+     * <p>
+     * If the exchange rate for the transaction's currency is not found, it is fetched from an external API.
+     * The total sum of transactions for the current month is calculated and compared to the account limit.
+     * If the limit is exceeded, the transaction's {@code limitExceeded} flag is set to {@code true}.
+     * </p>
+     *
+     * @param transaction The transaction to be processed.
+     * @return The processed {@link Transaction} object with updated data.
+     */
     @Transactional
     public Transaction getTransaction(Transaction transaction) {
         logger.info("Processing transaction: " + transaction);
@@ -54,6 +87,7 @@ public class TransactionService {
         AccountLimit limit = limitRepository.findLimitsByMonthAndCategory(LocalDateTime.now().getMonthValue(), transaction.getCategory());
         List<Transaction> transactions = transactionRepository.findTransactionsByMonthAndCategory(LocalDateTime.now().getMonthValue(), transaction.getCategory());
         transactions.add(transaction);
+
         if (exchangeRate == null) {
             logger.info("Exchange rate not found, fetching from API.");
             Map<String, Object> rate = exchangeRateClient.getExchangeRate("USD/" + transaction.getCurrency(), apiKey);
@@ -62,37 +96,71 @@ public class TransactionService {
             exchangeRateRepository.save(newExchangeRate);
             logger.info("New exchange rate saved: " + newExchangeRate);
 
-            BigDecimal totalSumInUSD = transactions.stream()
-                    .map(transaction1 -> convertToUSD(transaction1.getAmount(), newExchangeRate, transaction1))
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            BigDecimal totalSumInUSD = getSumOfTransactionForMonth(transactions, newExchangeRate);
             if (totalSumInUSD.compareTo(limit.getLimitAmount()) > 0) {
                 transaction.setLimitExceeded(true);
             }
         } else {
-            BigDecimal totalSumInUSD = transactions.stream()
-                    .map(transaction1 -> convertToUSD(transaction1.getAmount(), exchangeRate, transaction1))
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            BigDecimal totalSumInUSD = getSumOfTransactionForMonth(transactions, exchangeRate);
             if (totalSumInUSD.compareTo(limit.getLimitAmount()) > 0) {
                 transaction.setLimitExceeded(true);
             }
         }
+
         transactionRepository.save(transaction);
         logger.info("Transaction saved: " + transaction);
         return transaction;
     }
 
+    /**
+     * Calculates the total sum of transactions for the current month in USD using the provided exchange rate.
+     *
+     * @param transactions List of transactions for the current month.
+     * @param exchangeRate The exchange rate to convert transaction amounts to USD.
+     * @return The total sum of transactions in USD.
+     */
+    private BigDecimal getSumOfTransactionForMonth(List<Transaction> transactions, ExchangeRate exchangeRate) {
+        return transactions.stream()
+                .map(transaction1 -> convertToUSD(transaction1.getAmount(), exchangeRate, transaction1))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    /**
+     * Checks if an exchange rate exists for the currency of the transaction.
+     *
+     * @param transaction The transaction to check.
+     * @return The {@link ExchangeRate} for the transaction's currency, or {@code null} if not found.
+     */
     private ExchangeRate checkExchangeRate(Transaction transaction) {
         logger.info("Checking exchange rate for transaction currency: " + transaction.getCurrency());
         String currency = transaction.getCurrency();
         return exchangeRateRepository.findByCurrency(currency);
     }
 
+    /**
+     * Converts the transaction amount to USD using the exchange rate and the transaction's date.
+     *
+     * @param amount The amount to convert.
+     * @param exchangeRate The exchange rate to use for the conversion.
+     * @param transaction The transaction that contains the date for determining the rate.
+     * @return The amount in USD.
+     */
     private BigDecimal convertToUSD(BigDecimal amount, ExchangeRate exchangeRate, Transaction transaction) {
         DayOfWeek dayOfWeek = transaction.getDate().getDayOfWeek();
         BigDecimal rate = getRateForDayOfWeek(exchangeRate, dayOfWeek);
         return amount.divide(rate, 2, RoundingMode.HALF_UP);
     }
 
+    /**
+     * Retrieves the appropriate exchange rate based on the day of the week.
+     * <p>
+     * If the transaction occurs on a Saturday or Sunday, the previous closing rate is used. Otherwise, the current closing rate is used.
+     * </p>
+     *
+     * @param exchangeRate The exchange rate to check.
+     * @param dayOfWeek The day of the week for the transaction.
+     * @return The exchange rate for the specified day.
+     */
     private BigDecimal getRateForDayOfWeek(ExchangeRate exchangeRate, DayOfWeek dayOfWeek) {
         if (dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY) {
             return exchangeRate.getPreviousClosingRate();

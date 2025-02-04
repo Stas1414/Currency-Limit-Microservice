@@ -73,7 +73,10 @@ public class ForexRate {
     @JsonProperty("fifty_two_week")
     private FiftyTwoWeekData fifty_two_week;
 
-    // Getter and setter methods
+    public ForexRate(String symbol, BigDecimal close) {
+        this.symbol = symbol;
+        this.close = close;
+    }
 
     /**
      * Gets the symbol of the forex rate (e.g., "AAPL" for Apple).

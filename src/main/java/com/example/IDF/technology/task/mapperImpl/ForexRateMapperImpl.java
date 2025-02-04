@@ -28,7 +28,7 @@ public class ForexRateMapperImpl implements ForexRateMapper {
      * @return the mapped {@link ExchangeRate} entity or {@code null} if the input {@link ForexRate} is {@code null}
      */
     @Override
-    public ExchangeRate ForexRateToExchangeRate(ForexRate forexRate) {
+    public ExchangeRate forexRateToExchangeRate(ForexRate forexRate) {
 
         if (forexRate == null) {
             return null;
@@ -36,16 +36,16 @@ public class ForexRateMapperImpl implements ForexRateMapper {
 
         ExchangeRate exchangeRate = new ExchangeRate();
 
-        // Mapping the fields from ForexRate to ExchangeRate
+
         exchangeRate.setDate(forexRate.getDate());
         exchangeRate.setSymbol(forexRate.getSymbol());
 
-        // Only set the closing rate if it's not null
+
         if (forexRate.getClose() != null) {
             exchangeRate.setClosingRate(forexRate.getClose());
         }
 
-        // Only set the previous closing rate if it's not null
+
         if (forexRate.getPrevious_close() != null) {
             exchangeRate.setPreviousClosingRate(forexRate.getPrevious_close());
         }

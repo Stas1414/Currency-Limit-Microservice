@@ -26,5 +26,5 @@ public interface ForexRateMapper {
      * @param forexRate the ForexRate object to be converted
      * @return the mapped {@link ExchangeRate} entity
      */
-    ExchangeRate ForexRateToExchangeRate(ForexRate forexRate);
+    ExchangeRate forexRateToExchangeRate(ForexRate forexRate);
 }

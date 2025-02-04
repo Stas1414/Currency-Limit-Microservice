@@ -61,10 +61,10 @@ public class ForexService {
         ForexRate exchangeRateUSDRUB = exchangeRateClient.getExchangeRate("USD/RUB", apiKey);
 
 
-        exchangeRateRepository.save(forexRateMapper.ForexRateToExchangeRate(exchangeRateUSDKZT));
+        exchangeRateRepository.save(forexRateMapper.forexRateToExchangeRate(exchangeRateUSDKZT));
         logger.info("Saved exchange rate for USD/KZT");
 
-        exchangeRateRepository.save(forexRateMapper.ForexRateToExchangeRate(exchangeRateUSDRUB));
+        exchangeRateRepository.save(forexRateMapper.forexRateToExchangeRate(exchangeRateUSDRUB));
         logger.info("Saved exchange rate for USD/RUB");
     }
 }

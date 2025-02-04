@@ -84,6 +84,15 @@ public class Transaction {
         this.category = category;
     }
 
+    public Transaction(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public Transaction(BigDecimal amount, LocalDateTime date) {
+        this.date = date;
+        this.amount = amount;
+    }
+
     /**
      * Gets the transaction ID.
      *

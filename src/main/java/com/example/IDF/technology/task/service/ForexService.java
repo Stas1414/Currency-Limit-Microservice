@@ -36,9 +36,9 @@ public class ForexService {
     /**
      * Constructor injection for required dependencies.
      *
-     * @param exchangeRateClient the client to fetch exchange rates
+     * @param exchangeRateClient     the client to fetch exchange rates
      * @param exchangeRateRepository the repository to save exchange rates
-     * @param forexRateMapper the mapper to convert forex rate to entity
+     * @param forexRateMapper        the mapper to convert forex rate to entity
      */
     @Autowired
     public ForexService(ExchangeRateClient exchangeRateClient, ExchangeRateRepository exchangeRateRepository, ForexRateMapperImpl forexRateMapper) {
@@ -68,3 +68,4 @@ public class ForexService {
         logger.info("Saved exchange rate for USD/RUB");
     }
 }
+
